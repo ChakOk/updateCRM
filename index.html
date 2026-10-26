@@ -51,21 +51,49 @@ input.n{width:84px;text-align:right}
 .days i{aspect-ratio:1;border-radius:6px;background:linear-gradient(135deg,#ff9a5a,#6aa5ff)}
 textarea{height:160px;font:12px ui-monospace,monospace;margin-top:8px}
 #sd{margin-top:auto;width:10px;height:10px;border-radius:50%;align-self:center;background:var(--m)}#sd.ok{background:#6bd6a4}#sd.err{background:#ff6f6f}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{min-width:38px;height:34px;border-radius:12px;border:1px solid var(--line);background:var(--in);color:var(--m);font:inherit;cursor:pointer}.chip.on{background:var(--tx);color:var(--bg)}
+.fl{display:block;margin-top:10px;font-size:11px;color:var(--m)}.fl input{margin-top:4px;font-size:15px}
+.it{padding:12px 0;border-top:1px solid var(--line)}.it:first-of-type{border-top:0}
+.fld{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:8px;align-items:end}
+.dl{background:none!important;color:#ff7a7a!important;border:1px solid var(--line)!important;padding:8px!important;font-size:12px!important}
+button{transition:transform .15s cubic-bezier(.3,1.6,.5,1),background .25s,opacity .25s}
+button:active{transform:scale(.92)}
+nav svg{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}nav button:active svg{transform:scale(.78) rotate(-10deg)}nav button.on svg{transform:scale(1.1)}
+input{transition:border-color .2s,box-shadow .2s}input:focus{border-color:#6aa5ff;box-shadow:0 0 0 3px rgba(106,165,255,.25)}
+.w{transition:transform .25s}.w:active{transform:scale(.992)}
+.w.hot{background-size:200% 200%;animation:flow 10s ease infinite}
+.enter .w{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+.enter .w:nth-child(2){animation-delay:.07s}.enter .w:nth-child(3){animation-delay:.14s}.enter .w:nth-child(4){animation-delay:.21s}.enter .w:nth-child(5){animation-delay:.28s}.enter .w:nth-child(n+6){animation-delay:.35s}
+.enter .days i{animation:rise .5s var(--d) both}
+.bar i{transition:width 1.1s cubic-bezier(.2,.8,.2,1)}.bar .av.s{transition:left 1.1s cubic-bezier(.2,.8,.2,1);animation:bob 3.2s ease-in-out infinite}
+.ring circle:nth-child(2){transition:stroke-dasharray 1.2s cubic-bezier(.2,.8,.2,1)}
+.ck.pop{animation:pop .45s}.pulse{animation:pulse 1.6s infinite}
+#sd.ok{animation:dot 3s infinite}#sd.err{animation:dot 1s infinite}
+#cf{position:fixed;inset:0;pointer-events:none;z-index:30}
+.fx{position:fixed;z-index:31;pointer-events:none;font-weight:600;font-size:15px;animation:fl 1s ease-out forwards}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.97)}}
+@keyframes flow{50%{background-position:100% 50%}}
+@keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes pulse{from{box-shadow:0 0 0 0 rgba(255,111,145,.55)}to{box-shadow:0 0 0 14px rgba(255,111,145,0)}}
+@keyframes bob{50%{transform:translateX(-50%) translateY(-3px)}}
+@keyframes dot{50%{opacity:.35}}
+@keyframes fl{to{transform:translateY(-48px);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media(min-width:720px){nav{width:196px}nav button span{display:inline}main{margin-left:220px;max-width:1100px}}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a5a"/><stop offset=".55" stop-color="#ff6f91"/><stop offset="1" stop-color="#6aa5ff"/></linearGradient></defs></svg>
-<nav id="nav"></nav><main><div class="grid" id="app"></div></main>
+<canvas id="cf"></canvas><nav id="nav"></nav><main><div class="grid" id="app"></div></main>
 <script>
 const tg=window.Telegram&&Telegram.WebApp;tg&&(tg.ready(),tg.expand());
 document.documentElement.dataset.t=(tg&&tg.colorScheme)||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-const API='https://script.google.com/macros/s/AKfycbxTBralO3kjnN_-8QkaT22RVo2aOYGRQbFE62_ndsbiUvg8AuhX2jL42-aSqzR1MZkG5Q/exec'; // URL веб-приложения Apps Script (не секрет)
+const API='https://script.google.com/macros/s/AKfycbxTBralO3kjnN_-8QkaT22RVo2aOYGRQbFE62_ndsbiUvg8AuhX2jL42-aSqzR1MZkG5Q/exec';
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const T=iso(new Date()),dd=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const empty=()=>({profile:{name:'',avatar:'🙂'},dream:'',level_now:1,levels:[],bonus:[],st:{log:{},claimed:[],done:[]}});
-const IC={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',tasks:'M4 12l5 5L20 6',quests:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.3l6.1-.7z',gift:'M4 9h16v4H4zM6 13v8h12v-8M12 9v12M12 9c-3 0-4-4-1.5-4S12 9 12 9zM12 9c3 0 4-4 1.5-4S12 9 12 9z',set:'M4 7h9M17 7h3M4 17h3M11 17h9M15 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM9 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'};
-const TABS=[['home','Главная'],['tasks','Задачи'],['quests','Квесты'],['gift','Награды'],['set','Настройки']];
-const LAY={home:['warn','hero','next','gauge','today','metrics','streak','quests'],tasks:['today','soon','metrics','streak'],quests:['quests'],gift:['next','rewards'],set:['settings']};
+const IC={goals:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',tasks:'M4 12l5 5L20 6',quests:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.3l6.1-.7z',gift:'M4 9h16v4H4zM6 13v8h12v-8M12 9v12M12 9c-3 0-4-4-1.5-4S12 9 12 9zM12 9c3 0 4-4 1.5-4S12 9 12 9z',set:'M4 7h9M17 7h3M4 17h3M11 17h9M15 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM9 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'};
+const TABS=[['home','Главная'],['tasks','Задачи'],['goals','Цели'],['quests','Квесты'],['gift','Награды'],['set','Настройки']];
+const LAY={home:['warn','hero','next','gauge','today','metrics','streak','quests'],tasks:['today','soon','metrics','streak'],goals:['gLvl','gHab','gMet','gRew','gBon'],quests:['quests'],gift:['next','rewards'],set:['settings']};
 let D=null,tm,tab='home',ready=!API,SYNC={s:API?'wait':'off',m:''};
 const HINT={no_init:'Приложение открыто не через Telegram. Запускай через бота.',no_token:'В свойствах скрипта нет BOT_TOKEN.',bad_hash:'Подпись не сошлась: BOT_TOKEN не от того бота, через которого открыто приложение.',expired:'Сессия устарела, перезапусти приложение.',too_big:'Данные слишком большие для ячейки.','Failed to fetch':'Нет доступа к скрипту: в развёртывании нужен доступ «Все», а URL в API должен оканчиваться на /exec.'};
 const hint=m=>HINT[m]||m;
@@ -80,7 +108,7 @@ async function load(){
     SYNC={s:'ok',m:''}}catch(e){SYNC={s:'err',m:e.message}}}
   D=D||empty();render();
 }
-function save(){D._t=Date.now();try{localStorage.setItem('d',JSON.stringify(D))}catch(e){}clearTimeout(tm);tm=setTimeout(push,300);render()}
+function save(nr){D._t=Date.now();try{localStorage.setItem('d',JSON.stringify(D))}catch(e){}clearTimeout(tm);tm=setTimeout(push,300);nr||render()}
 addEventListener('pagehide',()=>{clearTimeout(tm);push(true)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(tm);push(true)}});
 const last=id=>{const a=D.st.log[id]||[];return a.length?a.reduce((x,y)=>x>y?x:y):null};
@@ -94,17 +122,27 @@ function calc(){
   let p=(we*ef+wr*rs)/(we+wr);if(M.length&&rs<1)p=Math.min(p,.99);
   return{L,H,M,ef,rs,p};
 }
-const ring=(v,t)=>`<div class="ring"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="36" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="45" cy="45" r="36" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${Math.min(1,v)*226} 226" transform="rotate(-90 45 45)"/><text x="45" y="52" text-anchor="middle">${Math.round(v*100)}</text></svg>${t}</div>`;
-const trow=({h,dn})=>`<div class="row"><button class="ck ${dn?'on':''}" data-a="tick" data-id="${esc(h.id)}">${dn?'✓':''}</button><span class="${dn?'done':''}">${esc(h.name)}</span><i class="xp">+${h.xp||0} XP</i></div>`;
+const ring=(v,t)=>`<div class="ring"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="36" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="45" cy="45" r="36" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" style="stroke-dasharray:0 226" data-p="strokeDasharray" data-to="${Math.min(1,v)*226} 226" transform="rotate(-90 45 45)"/><text x="45" y="52" text-anchor="middle">${Math.round(v*100)}</text></svg>${t}</div>`;
+const trow=({h,dn})=>`<div class="row"><button class="ck ${dn?'on':''} ${dn&&fx==h.id?'pop':''}" data-a="tick" data-id="${esc(h.id)}">${dn?'✓':''}</button><span class="${dn?'done':''}">${esc(h.name)}</span><i class="xp">+${h.xp||0} XP</i></div>`;
+const inp=(f,i,k,v,t)=>`<input data-f="${f}" data-i="${i}" data-k="${k}" type="${t}" ${t=='number'?'inputmode="decimal" step="any"':''} value="${esc(v)}">`;
+const lab=(t,h)=>`<label class="fl">${t}${h}</label>`;
+const rk=(L,r)=>L.n+':'+r.at+':'+r.text;
+let eN=null;const EL=()=>{const n=eN||D.level_now+1;return D.levels.find(l=>l.n==n)};
+const dl=(f,i)=>`<button class="b dl" data-a="del" data-id="${f}:${i}">Удалить</button>`;
 const W={
+gLvl:()=>{const L=EL();return`<div class="w"><div class="lb">Уровни</div><div class="chips">${D.levels.map(l=>`<button class="chip ${L&&l.n==L.n?'on':''}" data-a="lv" data-id="${l.n}">${l.n}</button>`).join('')}<button class="chip" data-a="add" data-id="lvl">+</button></div>${lab('Мой текущий уровень',inp('now',0,'n',D.level_now,'number'))}${L?lab('Название уровня '+L.n,inp('lvl',0,'title',L.title||'','text'))+lab('Доля результата в прогрессе, %',inp('lvl',0,'rw',Math.round(((L.weights&&L.weights.result)??.6)*100),'number')):'<div class="m" style="margin-top:10px">Уровней нет, нажми +</div>'}</div>`},
+gHab:()=>{const L=EL();if(!L)return'';return`<div class="w"><div class="lb">Задачи уровня ${L.n}</div>${(L.habits||[]).map((h,i)=>`<div class="it">${inp('habits',i,'name',h.name,'text')}<div class="fld">${lab('Раз в N дней',inp('habits',i,'every_days',h.every_days||1,'number'))}${lab('XP',inp('habits',i,'xp',h.xp||0,'number'))}${dl('habits',i)}</div></div>`).join('')}<div class="mini"><button class="b" data-a="add" data-id="habits">+ Задача</button></div></div>`},
+gMet:()=>{const L=EL();if(!L)return'';return`<div class="w"><div class="lb">Метрики уровня ${L.n}</div>${(L.metrics||[]).map((m,i)=>`<div class="it">${inp('metrics',i,'name',m.name,'text')}<div class="fld">${lab('Старт',inp('metrics',i,'start',m.start,'number'))}${lab('Сейчас',inp('metrics',i,'current',m.current,'number'))}${lab('Цель',inp('metrics',i,'target',m.target,'number'))}${lab('Вес',inp('metrics',i,'w',m.w||1,'number'))}</div><div class="mini">${dl('metrics',i)}</div></div>`).join('')}<div class="mini"><button class="b" data-a="add" data-id="metrics">+ Метрика</button></div></div>`},
+gRew:()=>{const L=EL();if(!L)return'';return`<div class="w"><div class="lb">Награды уровня ${L.n}</div>${(L.rewards||[]).map((r,i)=>`<div class="it">${inp('rewards',i,'text',r.text,'text')}<div class="fld">${lab('На % шкалы',inp('rewards',i,'at',r.at,'number'))}${dl('rewards',i)}</div></div>`).join('')}<div class="mini"><button class="b" data-a="add" data-id="rewards">+ Награда</button></div></div>`},
+gBon:()=>`<div class="w"><div class="lb">Побочные квесты</div>${(D.bonus||[]).map((b,i)=>`<div class="it">${inp('bonus',i,'name',b.name,'text')}<div class="fld">${lab('XP',inp('bonus',i,'xp',b.xp||0,'number'))}${dl('bonus',i)}</div></div>`).join('')}<div class="mini"><button class="b" data-a="add" data-id="bonus">+ Квест</button></div></div>`,
 warn:x=>SYNC.s=='err'?`<div class="w hot"><div class="lb">Нет связи с таблицей</div><div>${esc(hint(SYNC.m))}</div><div class="m" style="color:inherit;opacity:.7;margin-top:6px">Прогресс пока хранится только на этом устройстве.</div></div>`:'',
 hero:x=>{const c=x.c;if(!c)return`<div class="w"><div class="lb">Старт</div><div class="ttl">Плана пока нет</div><p class="m">Открой «Настройки» и вставь JSON от нейросети.</p></div>`;
-  return`<div class="w"><div class="r2"><div class="lb">Уровень ${D.level_now} → ${c.L.n}</div><span class="pill">${x.xp} XP</span></div><div class="big">${x.pc}<small>%</small></div><div class="ttl">${esc(c.L.title||'')}</div>
-  <div class="bar"><i style="width:${x.pc}%"></i>${x.R.map(r=>`<b style="left:${r.at}%">${D.st.claimed.includes(x.key(r))?'✓':'◆'}</b>`).join('')}<div class="av s" style="left:${x.pc}%">${x.av}</div></div>
-  <div class="m">${esc(x.name)}</div>${x.pc>=100?`<div class="mini"><button class="b" data-a="up">Уровень ${c.L.n} 🚀</button></div>`:''}</div>`},
+  return`<div class="w"><div class="r2"><div class="lb">Уровень ${D.level_now} → ${c.L.n}</div><span class="pill">${x.xp} XP</span></div><div class="big"><span data-cu="${x.pc}" data-from="${x.lp}">${x.lp}</span><small>%</small></div><div class="ttl">${esc(c.L.title||'')}</div>
+  <div class="bar"><i style="width:${x.lp}%" data-p="width" data-to="${x.pc}%"></i>${x.R.map(r=>`<b style="left:${r.at}%">${D.st.claimed.includes(x.key(r))?'✓':'◆'}</b>`).join('')}<div class="av s" style="left:${x.lp}%" data-p="left" data-to="${x.pc}%">${x.av}</div></div>
+  <div class="m">${esc(x.name)}</div>${x.pc>=100?`<div class="mini"><button class="b pulse" data-a="up">Уровень ${c.L.n} 🚀</button></div>`:''}</div>`},
 next:x=>{if(!x.c)return'';const a=x.avail[0],n=x.nxt;
   return`<div class="w hot"><div class="lb">${a?'Награда доступна':'Ближайшая награда'}</div><div class="ttl" style="font-size:22px">${a?esc(a.text):n?esc(n.text):'Добавь награды'}</div>
-  <div class="m" style="color:inherit;opacity:.7;margin-top:4px">${a?'Ты её заработал':n?`на ${n.at}% · осталось ${n.at-x.pc}%`:'Раздел «Награды»'}</div>${a?`<div class="mini"><button class="b" data-a="claim" data-id="${esc(x.key(a))}">Забрать</button></div>`:''}</div>`},
+  <div class="m" style="color:inherit;opacity:.7;margin-top:4px">${a?'Ты её заработал':n?`на ${n.at}% · осталось ${n.at-x.pc}%`:'Раздел «Награды»'}</div>${a?`<div class="mini"><button class="b pulse" data-a="claim" data-id="${esc(x.key(a))}">Забрать</button></div>`:''}</div>`},
 gauge:x=>{const c=x.c;if(!c)return'';
   const t=c.M.length&&c.ef>=.7&&c.rs<c.ef-.25?'Свою часть ты делаешь, метрика догонит.':c.ef<.5?'Усилия просели, выполни пару задач.':'Идёшь в хорошем темпе.';
   return`<div class="w"><div class="lb">Баланс</div><div class="rings">${ring(c.ef,'Усилия, 14 дн.')}${c.M.length?ring(c.rs,'Результат'):''}</div><div class="m">${t}</div></div>`},
@@ -114,7 +152,7 @@ metrics:x=>{if(!x.c||!x.c.M.length)return'';return`<div class="w"><div class="lb
 streak:x=>{const hs=D.levels.flatMap(l=>l.habits||[]),ds=[];
   for(let i=13;i>=0;i--){const d=iso(new Date(Date.now()-i*864e5));ds.push(hs.filter(h=>(D.st.log[h.id]||[]).includes(d)).length)}
   const mx=Math.max(1,...ds);let st=0;for(let i=13;i>=0;i--){if(ds[i])st++;else if(i<13)break}
-  return`<div class="w"><div class="r2"><div class="lb">Активность</div><span class="pill">серия ${st} дн.</span></div><div class="days">${ds.map(v=>`<i style="opacity:${v?.25+.75*v/mx:.1}"></i>`).join('')}</div></div>`},
+  return`<div class="w"><div class="r2"><div class="lb">Активность</div><span class="pill">серия ${st} дн.</span></div><div class="days">${ds.map((v,i)=>`<i style="--d:${i*30}ms;opacity:${v?.25+.75*v/mx:.1}"></i>`).join('')}</div></div>`},
 quests:x=>`<div class="w"><div class="lb">Побочные квесты</div>${(D.bonus||[]).map(b=>{const d=D.st.done.includes(b.id);return`<div class="row"><button class="ck ${d?'on':''}" data-a="bonus" data-id="${esc(b.id)}">${d?'✓':''}</button><span class="${d?'done':''}">${esc(b.name)}</span><i class="xp">+${b.xp||0} XP</i></div>`}).join('')}<div class="mini"><input id="bn" placeholder="Новая цель, например: права"><button class="b" data-a="addB">+</button></div></div>`,
 rewards:x=>`<div class="w"><div class="lb">Все награды уровня</div>${x.R.map(r=>`<div class="row"><span>${esc(r.text)}</span><i class="xp">${D.st.claimed.includes(x.key(r))?'получено':x.pc>=r.at?'доступно':'на '+r.at+'%'}</i></div>`).join('')||'<div class="m">Пока пусто</div>'}<div class="mini"><input id="rt" placeholder="Своя награда"><input id="ra" class="n" type="number" placeholder="%" style="width:70px"><button class="b" data-a="addR">+</button></div></div>`,
 settings:x=>`<div class="w"><div class="lb">Синхронизация</div><div class="row"><span>${SYNC.s=='ok'?'Сохраняется в таблицу':SYNC.s=='err'?esc(hint(SYNC.m)):API?'Проверяю…':'Не подключена: в index.html пустая константа API'}</span><button class="b" data-a="retry">Проверить</button></div></div><div class="w"><div class="lb">Импорт и экспорт</div><textarea id="js" placeholder="Вставь сюда JSON от нейросети"></textarea><div class="mini"><button class="b" data-a="imp">Загрузить</button><button class="b" data-a="exp">Экспорт</button></div><div class="mini"><input type="file" id="fl" accept=".json,.txt"></div></div><div class="w"><div class="lb">Аватар</div><div class="m">Любая картинка или 3D-рендер. Квадрат вырежется по центру.</div><div class="mini"><input type="file" id="av" accept="image/*"></div><div class="mini"><button class="b" data-a="avDel">Вернуть фото Telegram</button></div></div><div class="w"><div class="lb">Удаление</div><div class="mini"><button class="b" data-a="delProg">Сбросить прогресс</button></div><div class="mini"><button class="b" data-a="delPlan">Удалить загруженный план</button></div><div class="m" style="margin-top:8px">Удаление затрагивает и таблицу, отменить нельзя.</div></div>`
@@ -124,26 +162,44 @@ function render(){
   const av=D.avatarImg?`<img src="${esc(D.avatarImg)}">`:u&&u.photo_url?`<img src="${esc(u.photo_url)}">`:esc(P.avatar||'🙂');
   let xp=0;D.levels.flatMap(l=>l.habits||[]).forEach(h=>xp+=(D.st.log[h.id]||[]).length*(h.xp||0));
   (D.bonus||[]).forEach(b=>{if(D.st.done.includes(b.id))xp+=b.xp||0});
-  const x={c,av,xp,name:P.name||(u&&u.first_name)||'Игрок',pc:0,R:[],due:[],soon:[],avail:[],nxt:null};
+  const x={c,av,xp,name:P.name||(u&&u.first_name)||'Игрок',pc:0,lp:animate?0:lastPc,R:[],due:[],soon:[],avail:[],nxt:null};
   if(c){x.pc=Math.round(c.p*100);x.R=(c.L.rewards||[]).slice().sort((a,b)=>a.at-b.at);x.key=r=>c.L.n+':'+r.at+':'+r.text;
     x.avail=x.R.filter(r=>x.pc>=r.at&&!D.st.claimed.includes(x.key(r)));x.nxt=x.R.find(r=>x.pc<r.at);
     c.H.forEach(h=>{const l=last(h.id),dn=l===T,gap=l?dd(l,T):99,e=h.every_days||1;(dn||gap>=e?x.due:x.soon).push({h,dn,w:e-gap})});x.soon.sort((a,b)=>a.w-b.w)}
   else x.key=()=>'';
   document.getElementById('nav').innerHTML=TABS.map(([k,n])=>`<button class="${k==tab?'on':''}" data-a="tab" data-id="${k}"><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><span>${n}</span></button>`).join('')+`<i id="sd" class="${SYNC.s}"></i>`;
-  document.getElementById('app').innerHTML=LAY[tab].map(k=>W[k](x)).join('');
+  const app=document.getElementById('app');app.className='grid'+(animate?' enter':'');
+  app.innerHTML=LAY[tab].map(k=>W[k](x)).join('');
+  if(animate)setTimeout(()=>app.classList.remove('enter'),900);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{app.querySelectorAll('[data-p]').forEach(e=>{e.style[e.dataset.p]=e.dataset.to});app.querySelectorAll('[data-cu]').forEach(e=>countUp(e,+e.dataset.from,+e.dataset.cu))}));
+  lastPc=x.pc;animate=false;fx=null;
 }
+let fx=null,lastPc=0,animate=true,XY=[innerWidth/2,innerHeight/2];
+document.addEventListener('pointerdown',e=>{XY=[e.clientX,e.clientY]},true);
+function boom(n,x,y){const c=document.getElementById('cf'),g=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const P=[...Array(n)].map(()=>({x,y,vx:(Math.random()-.5)*11,vy:-Math.random()*9-3,r:Math.random()*4+2,c:['#ff9a5a','#ff6f91','#6aa5ff','#8fe0bd','#ffd27a'][Math.random()*5|0],l:1}));
+  (function f(){g.clearRect(0,0,c.width,c.height);let a=0;P.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.l-=.014;if(p.l>0){a=1;g.globalAlpha=p.l;g.fillStyle=p.c;g.beginPath();g.arc(p.x,p.y,p.r,0,7);g.fill()}});a?requestAnimationFrame(f):g.clearRect(0,0,c.width,c.height)})()}
+function floatTxt(t){const d=document.createElement('div');d.className='fx';d.textContent=t;d.style.left=XY[0]-20+'px';d.style.top=XY[1]-30+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1000)}
+function countUp(el,a,b){const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/900);el.textContent=Math.round(a+(b-a)*(1-Math.pow(1-k,3)));k<1&&requestAnimationFrame(f)})(t0)}
 const ask=(t,f)=>tg&&tg.showConfirm?tg.showConfirm(t,ok=>ok&&f()):confirm(t)&&f();
 function setAv(file){const r=new FileReader();r.onload=()=>{const im=new Image();im.onerror=()=>alert('Не удалось прочитать картинку');im.onload=()=>{const c=document.createElement('canvas'),S=128,m=Math.min(im.width,im.height),x=c.getContext('2d');c.width=c.height=S;x.fillStyle='#fff';x.fillRect(0,0,S,S);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,S,S);D.avatarImg=c.toDataURL('image/jpeg',.8);save()};im.src=r.result};r.readAsDataURL(file)}
 const A={
   retry(){load()},
+  lv(id){eN=+id;render()},
+  add(id){const L=EL();
+    if(id=='lvl'){const n=Math.max(D.level_now,...D.levels.map(l=>l.n))+1;D.levels.push({n,title:'Новый уровень'});D.levels.sort((a,b)=>a.n-b.n);eN=n}
+    else if(id=='bonus')(D.bonus=D.bonus||[]).push({id:'b'+Date.now(),name:'Новая цель',xp:20});
+    else if(L){const o={habits:{id:'h'+Date.now(),name:'Новая задача',every_days:1,xp:10},metrics:{id:'m'+Date.now(),name:'Метрика',start:0,current:0,target:100,w:1},rewards:{at:50,text:'Награда'}}[id];(L[id]=L[id]||[]).push(o)}
+    save()},
+  del(id){const[f,i]=id.split(':');ask('Удалить?',()=>{(f=='bonus'?D.bonus:EL()[f]).splice(+i,1);save()})},
   avDel(){delete D.avatarImg;save()},
   delProg(){ask('Сбросить весь прогресс? План останется.',()=>{D.st={log:{},claimed:[],done:[]};save()})},
   delPlan(){ask('Удалить план и весь прогресс?',()=>{const a=D.avatarImg;D=empty();if(a)D.avatarImg=a;tab='set';save()})},
-  tab(id){tab=id;render();scrollTo(0,0)},
-  tick(id){const a=D.st.log[id]||[],i=a.indexOf(T);i<0?a.push(T):a.splice(i,1);D.st.log[id]=a;tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred('light');save()},
-  claim(k){D.st.claimed.push(k);tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success');save()},
-  bonus(id){const a=D.st.done,i=a.indexOf(id);i<0?a.push(id):a.splice(i,1);save()},
-  up(){D.level_now++;save()},
+  tab(id){tab=id;animate=true;render();scrollTo(0,0)},
+  tick(id){const a=D.st.log[id]||[],i=a.indexOf(T);i<0?a.push(T):a.splice(i,1);D.st.log[id]=a;if(i<0){const hh=D.levels.flatMap(l=>l.habits||[]).find(h=>h.id==id);floatTxt('+'+((hh&&hh.xp)||0)+' XP');boom(18,XY[0],XY[1]);fx=id}tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred('light');save()},
+  claim(k){D.st.claimed.push(k);boom(90,innerWidth/2,innerHeight/3);tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success');save()},
+  bonus(id){const a=D.st.done,i=a.indexOf(id);if(i<0){floatTxt('+XP');boom(16,XY[0],XY[1])}i<0?a.push(id):a.splice(i,1);save()},
+  up(){D.level_now++;eN=null;animate=true;boom(110,innerWidth/2,innerHeight/3);save()},
   addB(){const v=document.getElementById('bn').value.trim();if(!v)return;(D.bonus=D.bonus||[]).push({id:'b'+Date.now(),name:v,xp:20});save()},
   addR(){const t=document.getElementById('rt').value.trim(),a=+document.getElementById('ra').value,c=calc();if(!t||!c||!(a>=0))return;(c.L.rewards=c.L.rewards||[]).push({at:Math.min(100,a),text:t});save()},
   imp(){try{const j=JSON.parse(document.getElementById('js').value.replace(/^```json|```$/g,'').trim());if(!Array.isArray(j.levels))throw 0;D=Object.assign(empty(),j,{st:D.st});tab='home';save()}catch(e){alert('Не удалось прочитать JSON')}},
@@ -152,6 +208,11 @@ const A={
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset.id)});
 document.addEventListener('change',e=>{
   const t=e.target;
+  if(t.dataset.f){const f=t.dataset.f,i=+t.dataset.i,k=t.dataset.k,v=t.type=='number'?+t.value:t.value;
+    if(f=='now'){D.level_now=v;eN=null}
+    else if(f=='lvl'){const L=EL();if(k=='rw')L.weights={effort:1-v/100,result:v/100};else L[k]=v}
+    else{const L=EL(),o=(f=='bonus'?D.bonus:L[f])[i],old=f=='rewards'?rk(L,o):'';o[k]=v;if(old){const j=D.st.claimed.indexOf(old);if(j>=0)D.st.claimed[j]=rk(L,o)}}
+    save(f!='now');return}
   if(t.dataset.m){const c=calc(),m=c&&c.M.find(x=>x.id==t.dataset.m);if(m){m.current=+t.value;save()}}
   if(t.id=='av'&&t.files[0])setAv(t.files[0]);
   if(t.id=='fl'&&t.files[0]){const r=new FileReader();r.onload=()=>{document.getElementById('js').value=r.result};r.readAsText(t.files[0])}

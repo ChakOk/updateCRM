@@ -58,7 +58,7 @@ textarea{height:160px;font:12px ui-monospace,monospace;margin-top:8px}
 <script>
 const tg=window.Telegram&&Telegram.WebApp;tg&&(tg.ready(),tg.expand());
 document.documentElement.dataset.t=(tg&&tg.colorScheme)||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-const API=''; // URL веб-приложения Apps Script (не секрет)
+const API='https://script.google.com/macros/s/AKfycbxTBralO3kjnN_-8QkaT22RVo2aOYGRQbFE62_ndsbiUvg8AuhX2jL42-aSqzR1MZkG5Q/exec'; // URL веб-приложения Apps Script (не секрет)
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const T=iso(new Date()),dd=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

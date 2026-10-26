@@ -4,55 +4,85 @@
 <title>Уровни</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{--bg:#1c2030;--c:#262c42;--tx:#e9ecf6;--m:#8d95b3;--a:#7c9cff;--g:#8fe0bd;--y:#ffd27a}
-@media(prefers-color-scheme:light){:root{--bg:#f2f4fa;--c:#fff;--tx:#232842;--m:#6d7594}}
-*{box-sizing:border-box}
-body{margin:0;font:15px/1.4 system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:14px 14px 50px}
-.c{background:var(--c);border-radius:16px;padding:14px;margin-bottom:12px}
-h3{margin:0 0 6px;font-size:12px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-.top{display:flex;gap:12px;align-items:center}
-.av{width:44px;height:44px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:24px;overflow:hidden;flex:none}
-.av img{width:100%;height:100%;object-fit:cover}
+:root{--bg:#eceee8;--w:rgba(255,255,255,.55);--wb:rgba(255,255,255,.75);--tx:#1d2030;--m:#7b8097;--line:rgba(30,35,60,.1);--in:rgba(255,255,255,.7);--sh:0 10px 34px rgba(50,60,90,.09);--bl:.55;--ok:#1d2030}
+[data-t=dark]{--bg:#12141b;--w:rgba(255,255,255,.06);--wb:rgba(255,255,255,.1);--tx:#eceef7;--m:#8d93ab;--line:rgba(255,255,255,.09);--in:rgba(255,255,255,.07);--sh:0 10px 34px rgba(0,0,0,.35);--bl:.4;--ok:#12141b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;font:15px/1.4 -apple-system,"SF Pro Display",Inter,system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+body::before{content:"";position:fixed;inset:-10%;z-index:-1;opacity:var(--bl);filter:blur(70px);
+background:radial-gradient(34% 28% at 12% 8%,#ffa65c,transparent),radial-gradient(30% 30% at 88% 22%,#7fb2ff,transparent),radial-gradient(34% 30% at 20% 88%,#ff7c9a,transparent),radial-gradient(28% 26% at 85% 90%,#a9e6d0,transparent)}
+nav{position:fixed;left:max(8px,env(safe-area-inset-left));top:max(8px,env(safe-area-inset-top));bottom:max(8px,env(safe-area-inset-bottom));width:56px;padding:12px 8px;border-radius:24px;background:var(--w);border:1px solid var(--wb);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--sh);display:flex;flex-direction:column;gap:6px;z-index:5}
+nav button{display:flex;align-items:center;gap:12px;height:40px;padding:0 9px;border:0;border-radius:14px;background:none;color:var(--m);font:inherit;font-size:14px;cursor:pointer}
+nav button span{display:none}
+nav button.on{background:var(--tx);color:var(--bg)}
+nav svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+main{margin-left:72px;padding:max(14px,env(safe-area-inset-top)) 12px 60px 6px}
+.grid{column-width:260px;column-gap:14px}
+.w{display:inline-block;width:100%;break-inside:avoid;margin-bottom:14px;padding:18px;border-radius:24px;background:var(--w);border:1px solid var(--wb);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);box-shadow:var(--sh)}
+.w.hot{background:linear-gradient(135deg,rgba(255,154,90,.5),rgba(255,111,145,.42) 55%,rgba(106,165,255,.45))}
+.lb{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--m);margin-bottom:8px}
+.hot .lb{color:var(--tx);opacity:.7}
+.big{font-size:64px;font-weight:300;letter-spacing:-.04em;line-height:1}.big small{font-size:24px;margin-left:2px;color:var(--m)}
+.ttl{font-size:18px;font-weight:500;letter-spacing:-.01em;margin-top:6px}
 .m{color:var(--m);font-size:13px}
-.bar{position:relative;height:14px;border-radius:9px;background:var(--bg);margin:18px 16px 34px}
-.bar i{position:absolute;inset:0 auto 0 0;border-radius:9px;background:linear-gradient(90deg,var(--a),var(--g));transition:width .6s}
-.bar b{position:absolute;top:20px;transform:translateX(-50%);font-size:15px;font-weight:400}
-.bar .av{position:absolute;top:-8px;width:30px;height:30px;font-size:17px;transform:translateX(-50%);border:2px solid var(--c);transition:left .6s}
-.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--bg)}
+.r2{display:flex;justify-content:space-between;align-items:center}
+.pill{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--in);border:1px solid var(--line);color:var(--m)}
+.av{width:42px;height:42px;border-radius:50%;background:var(--in);display:grid;place-items:center;font-size:22px;overflow:hidden;flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+.bar{position:relative;height:8px;border-radius:8px;background:var(--line);margin:30px 16px 34px}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:8px;background:linear-gradient(90deg,#ff9a5a,#ff6f91,#6aa5ff);transition:width .7s}
+.bar b{position:absolute;top:16px;transform:translateX(-50%);font-size:11px;color:var(--m)}
+.bar .av.s{position:absolute;top:-17px;width:34px;height:34px;font-size:18px;transform:translateX(-50%);border:2px solid var(--bg);transition:left .7s}
+.row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
 .row:first-of-type{border-top:0}
-.row span{flex:1}
-.ck{width:26px;height:26px;border-radius:8px;border:2px solid var(--m);background:none;color:#fff;font-size:15px;flex:none;padding:0}
-.ck.on{background:var(--g);border-color:var(--g);color:#1c2030}
-.done{opacity:.55;text-decoration:line-through}
-button.b{background:var(--a);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-size:14px}
-input,textarea{width:100%;background:var(--bg);color:var(--tx);border:1px solid transparent;border-radius:10px;padding:9px;font:inherit}
-input.n{width:90px;text-align:right}
-.mini{display:flex;gap:8px;margin-top:8px}
-.xp{color:var(--y);font-size:12px;white-space:nowrap}
-.pill{display:inline-block;background:var(--bg);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--m);margin-right:6px}
-.gift{background:var(--y);color:#3a2d00}
-details summary{color:var(--m);font-size:13px;cursor:pointer}
-textarea{height:140px;font:12px monospace;margin:8px 0}
+.row>span{flex:1}
+.ck{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--m);background:none;color:#fff;font-size:13px;flex:none;padding:0;cursor:pointer}
+.ck.on{border:0;background:linear-gradient(135deg,#ff9a5a,#ff6f91,#6aa5ff)}
+.done{opacity:.45;text-decoration:line-through}
+.xp{font-size:11px;color:var(--m);font-style:normal;white-space:nowrap}
+button.b{background:var(--tx);color:var(--bg);border:0;border-radius:14px;padding:10px 16px;font:inherit;font-size:14px;cursor:pointer}
+input,textarea{width:100%;background:var(--in);color:var(--tx);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font:inherit;outline:0}
+input.n{width:84px;text-align:right}
+.mini{display:flex;gap:8px;margin-top:10px}
+.rings{display:flex;justify-content:space-around;margin:4px 0 10px}
+.ring{text-align:center;font-size:12px;color:var(--m)}
+.ring svg{width:86px;height:86px;display:block;margin:0 auto 4px}
+.ring text{fill:var(--tx);font-size:19px;font-weight:300}
+.days{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin:6px 0 10px}
+.days i{aspect-ratio:1;border-radius:6px;background:linear-gradient(135deg,#ff9a5a,#6aa5ff)}
+textarea{height:160px;font:12px ui-monospace,monospace;margin-top:8px}
+#sd{margin-top:auto;width:10px;height:10px;border-radius:50%;align-self:center;background:var(--m)}#sd.ok{background:#6bd6a4}#sd.err{background:#ff6f6f}
+@media(min-width:720px){nav{width:196px}nav button span{display:inline}main{margin-left:220px;max-width:1100px}}
 </style></head><body>
-<div id="app"></div>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a5a"/><stop offset=".55" stop-color="#ff6f91"/><stop offset="1" stop-color="#6aa5ff"/></linearGradient></defs></svg>
+<nav id="nav"></nav><main><div class="grid" id="app"></div></main>
 <script>
 const tg=window.Telegram&&Telegram.WebApp;tg&&(tg.ready(),tg.expand());
-const API=''; // сюда вставь URL веб-приложения Apps Script (не секрет)
+document.documentElement.dataset.t=(tg&&tg.colorScheme)||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+const API=''; // URL веб-приложения Apps Script (не секрет)
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const T=iso(new Date()),dd=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const empty=()=>({profile:{name:'',avatar:'🙂'},dream:'',level_now:1,levels:[],bonus:[],st:{log:{},claimed:[],done:[]}});
-let D=null,tm;
-async function api(a,data){if(!API)return null;const r=await fetch(API,{method:'POST',body:JSON.stringify({action:a,initData:tg?tg.initData:'',data})});return r.json()}
+const IC={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',tasks:'M4 12l5 5L20 6',quests:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.3l6.1-.7z',gift:'M4 9h16v4H4zM6 13v8h12v-8M12 9v12M12 9c-3 0-4-4-1.5-4S12 9 12 9zM12 9c3 0 4-4 1.5-4S12 9 12 9z',set:'M4 7h9M17 7h3M4 17h3M11 17h9M15 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM9 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'};
+const TABS=[['home','Главная'],['tasks','Задачи'],['quests','Квесты'],['gift','Награды'],['set','Настройки']];
+const LAY={home:['warn','hero','next','gauge','today','metrics','streak','quests'],tasks:['today','soon','metrics','streak'],quests:['quests'],gift:['next','rewards'],set:['settings']};
+let D=null,tm,tab='home',ready=!API,SYNC={s:API?'wait':'off',m:''};
+const HINT={no_init:'Приложение открыто не через Telegram. Запускай через бота.',no_token:'В свойствах скрипта нет BOT_TOKEN.',bad_hash:'Подпись не сошлась: BOT_TOKEN не от того бота, через которого открыто приложение.',expired:'Сессия устарела, перезапусти приложение.',too_big:'Данные слишком большие для ячейки.','Failed to fetch':'Нет доступа к скрипту: в развёртывании нужен доступ «Все», а URL в API должен оканчиваться на /exec.'};
+const hint=m=>HINT[m]||m;
+async function api(a,data,ka){const r=await fetch(API,{method:'POST',keepalive:!!ka,body:JSON.stringify({action:a,initData:tg?tg.initData:'',data})});const j=await r.json();if(j.error)throw new Error(j.error);return j}
+function sync(s,m){SYNC={s,m:m||''};const d=document.getElementById('sd');if(d)d.className=s;if(tab=='home'||tab=='set')render()}
+async function push(ka){if(!API||!ready)return;try{await api('set',D,ka);if(SYNC.s!='ok')sync('ok')}catch(e){sync('err',e.message)}}
 async function load(){
-  try{const l=localStorage.getItem('d');if(l)D=JSON.parse(l)}catch(e){}
-  try{const r=await api('get');if(r&&r.data)D=r.data}catch(e){}
+  let l=null;try{l=JSON.parse(localStorage.getItem('d'))}catch(e){}
+  D=l;
+  if(API){try{const s=(await api('get')).data;ready=true;
+    if(s&&(!l||(s._t||0)>=(l._t||0)))D=s;else if(l)push();
+    SYNC={s:'ok',m:''}}catch(e){SYNC={s:'err',m:e.message}}}
   D=D||empty();render();
 }
-function save(){
-  try{localStorage.setItem('d',JSON.stringify(D))}catch(e){}
-  clearTimeout(tm);tm=setTimeout(()=>api('set',D).catch(()=>{}),800);render();
-}
+function save(){D._t=Date.now();try{localStorage.setItem('d',JSON.stringify(D))}catch(e){}clearTimeout(tm);tm=setTimeout(push,300);render()}
+addEventListener('pagehide',()=>{clearTimeout(tm);push(true)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(tm);push(true)}});
 const last=id=>{const a=D.st.log[id]||[];return a.length?a.reduce((x,y)=>x>y?x:y):null};
 function calc(){
   const L=D.levels.find(l=>l.n==D.level_now+1);if(!L)return null;
@@ -64,46 +94,54 @@ function calc(){
   let p=(we*ef+wr*rs)/(we+wr);if(M.length&&rs<1)p=Math.min(p,.99);
   return{L,H,M,ef,rs,p};
 }
+const ring=(v,t)=>`<div class="ring"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="36" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="45" cy="45" r="36" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${Math.min(1,v)*226} 226" transform="rotate(-90 45 45)"/><text x="45" y="52" text-anchor="middle">${Math.round(v*100)}</text></svg>${t}</div>`;
+const trow=({h,dn})=>`<div class="row"><button class="ck ${dn?'on':''}" data-a="tick" data-id="${esc(h.id)}">${dn?'✓':''}</button><span class="${dn?'done':''}">${esc(h.name)}</span><i class="xp">+${h.xp||0} XP</i></div>`;
+const W={
+warn:x=>SYNC.s=='err'?`<div class="w hot"><div class="lb">Нет связи с таблицей</div><div>${esc(hint(SYNC.m))}</div><div class="m" style="color:inherit;opacity:.7;margin-top:6px">Прогресс пока хранится только на этом устройстве.</div></div>`:'',
+hero:x=>{const c=x.c;if(!c)return`<div class="w"><div class="lb">Старт</div><div class="ttl">Плана пока нет</div><p class="m">Открой «Настройки» и вставь JSON от нейросети.</p></div>`;
+  return`<div class="w"><div class="r2"><div class="lb">Уровень ${D.level_now} → ${c.L.n}</div><span class="pill">${x.xp} XP</span></div><div class="big">${x.pc}<small>%</small></div><div class="ttl">${esc(c.L.title||'')}</div>
+  <div class="bar"><i style="width:${x.pc}%"></i>${x.R.map(r=>`<b style="left:${r.at}%">${D.st.claimed.includes(x.key(r))?'✓':'◆'}</b>`).join('')}<div class="av s" style="left:${x.pc}%">${x.av}</div></div>
+  <div class="m">${esc(x.name)}</div>${x.pc>=100?`<div class="mini"><button class="b" data-a="up">Уровень ${c.L.n} 🚀</button></div>`:''}</div>`},
+next:x=>{if(!x.c)return'';const a=x.avail[0],n=x.nxt;
+  return`<div class="w hot"><div class="lb">${a?'Награда доступна':'Ближайшая награда'}</div><div class="ttl" style="font-size:22px">${a?esc(a.text):n?esc(n.text):'Добавь награды'}</div>
+  <div class="m" style="color:inherit;opacity:.7;margin-top:4px">${a?'Ты её заработал':n?`на ${n.at}% · осталось ${n.at-x.pc}%`:'Раздел «Награды»'}</div>${a?`<div class="mini"><button class="b" data-a="claim" data-id="${esc(x.key(a))}">Забрать</button></div>`:''}</div>`},
+gauge:x=>{const c=x.c;if(!c)return'';
+  const t=c.M.length&&c.ef>=.7&&c.rs<c.ef-.25?'Свою часть ты делаешь, метрика догонит.':c.ef<.5?'Усилия просели, выполни пару задач.':'Идёшь в хорошем темпе.';
+  return`<div class="w"><div class="lb">Баланс</div><div class="rings">${ring(c.ef,'Усилия, 14 дн.')}${c.M.length?ring(c.rs,'Результат'):''}</div><div class="m">${t}</div></div>`},
+today:x=>{if(!x.c)return'';return`<div class="w"><div class="lb">Сегодня</div>${x.due.length?x.due.map(trow).join(''):'<div class="m">На сегодня всё 🎉</div>'}</div>`},
+soon:x=>{if(!x.c)return'';return`<div class="w"><div class="lb">Скоро</div>${x.soon.length?x.soon.map(s=>`<div class="row"><span>${esc(s.h.name)}</span><i class="xp">через ${s.w} дн.</i></div>`).join(''):'<div class="m">Пусто</div>'}</div>`},
+metrics:x=>{if(!x.c||!x.c.M.length)return'';return`<div class="w"><div class="lb">Метрики · вне твоего контроля</div>${x.c.M.map(m=>`<div class="row"><span>${esc(m.name)}<div class="m">цель ${m.target}</div></span><input class="n" type="number" inputmode="decimal" value="${m.current}" data-m="${esc(m.id)}"></div>`).join('')}</div>`},
+streak:x=>{const hs=D.levels.flatMap(l=>l.habits||[]),ds=[];
+  for(let i=13;i>=0;i--){const d=iso(new Date(Date.now()-i*864e5));ds.push(hs.filter(h=>(D.st.log[h.id]||[]).includes(d)).length)}
+  const mx=Math.max(1,...ds);let st=0;for(let i=13;i>=0;i--){if(ds[i])st++;else if(i<13)break}
+  return`<div class="w"><div class="r2"><div class="lb">Активность</div><span class="pill">серия ${st} дн.</span></div><div class="days">${ds.map(v=>`<i style="opacity:${v?.25+.75*v/mx:.1}"></i>`).join('')}</div></div>`},
+quests:x=>`<div class="w"><div class="lb">Побочные квесты</div>${(D.bonus||[]).map(b=>{const d=D.st.done.includes(b.id);return`<div class="row"><button class="ck ${d?'on':''}" data-a="bonus" data-id="${esc(b.id)}">${d?'✓':''}</button><span class="${d?'done':''}">${esc(b.name)}</span><i class="xp">+${b.xp||0} XP</i></div>`}).join('')}<div class="mini"><input id="bn" placeholder="Новая цель, например: права"><button class="b" data-a="addB">+</button></div></div>`,
+rewards:x=>`<div class="w"><div class="lb">Все награды уровня</div>${x.R.map(r=>`<div class="row"><span>${esc(r.text)}</span><i class="xp">${D.st.claimed.includes(x.key(r))?'получено':x.pc>=r.at?'доступно':'на '+r.at+'%'}</i></div>`).join('')||'<div class="m">Пока пусто</div>'}<div class="mini"><input id="rt" placeholder="Своя награда"><input id="ra" class="n" type="number" placeholder="%" style="width:70px"><button class="b" data-a="addR">+</button></div></div>`,
+settings:x=>`<div class="w"><div class="lb">Синхронизация</div><div class="row"><span>${SYNC.s=='ok'?'Сохраняется в таблицу':SYNC.s=='err'?esc(hint(SYNC.m)):API?'Проверяю…':'Не подключена: в index.html пустая константа API'}</span><button class="b" data-a="retry">Проверить</button></div></div><div class="w"><div class="lb">Импорт и экспорт</div><textarea id="js" placeholder="Вставь сюда JSON от нейросети"></textarea><div class="mini"><button class="b" data-a="imp">Загрузить</button><button class="b" data-a="exp">Экспорт</button></div><div class="mini"><input type="file" id="fl" accept=".json,.txt"></div></div>`
+};
 function render(){
   const c=calc(),u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user,P=D.profile;
   const av=u&&u.photo_url?`<img src="${esc(u.photo_url)}">`:esc(P.avatar||'🙂');
-  const hab=D.levels.flatMap(l=>l.habits||[]);let xp=0;
-  hab.forEach(h=>xp+=(D.st.log[h.id]||[]).length*(h.xp||0));
+  let xp=0;D.levels.flatMap(l=>l.habits||[]).forEach(h=>xp+=(D.st.log[h.id]||[]).length*(h.xp||0));
   (D.bonus||[]).forEach(b=>{if(D.st.done.includes(b.id))xp+=b.xp||0});
-  let h=`<div class="c top"><div class="av">${av}</div><div style="flex:1"><b>${esc(P.name||(u&&u.first_name)||'Игрок')}</b><div class="m">Уровень ${D.level_now} · <span class="xp">${xp} XP</span></div></div></div>`;
-  if(!c){h+=`<div class="c">Пока нет плана. Открой «Настройки» ниже и вставь JSON.</div>`}
-  else{
-    const{L,H,M,ef,rs,p}=c,pc=Math.round(p*100),R=(L.rewards||[]).slice().sort((a,b)=>a.at-b.at);
-    const key=r=>L.n+':'+r.at+':'+r.text,avail=R.filter(r=>pc>=r.at&&!D.st.claimed.includes(key(r))),nxt=R.find(r=>pc<r.at);
-    h+=`<div class="c"><h3>Уровень ${D.level_now} → ${L.n}</h3><b>${esc(L.title||'')}</b><div class="bar"><i style="width:${pc}%"></i>${R.map(r=>`<b style="left:${r.at}%">${D.st.claimed.includes(key(r))?'✅':'🎁'}</b>`).join('')}<div class="av" style="left:${pc}%">${av}</div></div>
-    <div class="m">Всего <b style="color:var(--tx)">${pc}%</b>${nxt?` · ближайшая награда на ${nxt.at}%: ${esc(nxt.text)}`:''}</div>
-    <div style="margin-top:8px"><span class="pill">Усилия ${Math.round(ef*100)}%</span>${M.length?`<span class="pill">Результат ${Math.round(rs*100)}%</span>`:''}</div>
-    <div class="m" style="margin-top:6px">${M.length&&ef>=.7&&rs<ef-.25?'Свою часть ты делаешь — метрика не зависит от тебя напрямую и догонит.':ef<.5?'Усилия просели — выполни пару задач, и шкала сдвинется.':'Идёшь в хорошем темпе.'}</div>
-    ${p>=1?`<div class="mini"><button class="b" data-a="up">Перейти на уровень ${L.n} 🚀</button></div>`:''}</div>`;
-    avail.forEach(r=>h+=`<div class="c"><b>🎁 Награда доступна: ${esc(r.text)}</b><div class="mini"><button class="b gift" data-a="claim" data-id="${esc(key(r))}">Забрать</button></div></div>`);
-    if(M.length)h+=`<div class="c"><h3>Метрики (не от тебя зависят)</h3>${M.map(m=>`<div class="row"><span>${esc(m.name)}<div class="m">цель ${m.target}</div></span><input class="n" type="number" inputmode="decimal" value="${m.current}" data-m="${esc(m.id)}"></div>`).join('')}</div>`;
-    const due=[],soon=[];
-    H.forEach(x=>{const l=last(x.id),dn=l===T,gap=l?dd(l,T):99,e=x.every_days||1;(dn||gap>=e?due:soon).push({x,dn,w:e-gap})});
-    h+=`<div class="c"><h3>Сегодня</h3>${due.length?due.map(({x,dn})=>`<div class="row"><button class="ck ${dn?'on':''}" data-a="tick" data-id="${esc(x.id)}">${dn?'✓':''}</button><span class="${dn?'done':''}">${esc(x.name)}</span><i class="xp">+${x.xp||0}</i></div>`).join(''):'<div class="m">На сегодня всё 🎉</div>'}
-    ${soon.length?`<div class="m" style="margin-top:8px">Скоро: ${soon.sort((a,b)=>a.w-b.w).slice(0,3).map(s=>esc(s.x.name)+' (через '+s.w+' дн.)').join(', ')}</div>`:''}</div>`;
-  }
-  h+=`<div class="c"><h3>Побочные квесты</h3>${(D.bonus||[]).map(b=>{const d=D.st.done.includes(b.id);return`<div class="row"><button class="ck ${d?'on':''}" data-a="bonus" data-id="${esc(b.id)}">${d?'✓':''}</button><span class="${d?'done':''}">${esc(b.name)}</span><i class="xp">+${b.xp||0}</i></div>`}).join('')}
-  <div class="mini"><input id="bn" placeholder="Новая цель (например: права)"><button class="b" data-a="addB">+</button></div></div>`;
-  h+=`<div class="c"><details><summary>Настройки и импорт</summary>
-  <div class="mini"><input id="rt" placeholder="Своя награда"><input id="ra" class="n" type="number" placeholder="%" style="width:70px"><button class="b" data-a="addR">+</button></div>
-  <textarea id="js" placeholder="Вставь сюда JSON от нейросети"></textarea>
-  <div class="mini"><button class="b" data-a="imp">Загрузить</button><button class="b" data-a="exp">Экспорт</button><input type="file" id="fl" accept=".json,.txt" style="flex:1"></div></details></div>`;
-  const open=document.querySelector('details')&&document.querySelector('details').open;
-  document.getElementById('app').innerHTML=h;if(open)document.querySelector('details').open=true;
+  const x={c,av,xp,name:P.name||(u&&u.first_name)||'Игрок',pc:0,R:[],due:[],soon:[],avail:[],nxt:null};
+  if(c){x.pc=Math.round(c.p*100);x.R=(c.L.rewards||[]).slice().sort((a,b)=>a.at-b.at);x.key=r=>c.L.n+':'+r.at+':'+r.text;
+    x.avail=x.R.filter(r=>x.pc>=r.at&&!D.st.claimed.includes(x.key(r)));x.nxt=x.R.find(r=>x.pc<r.at);
+    c.H.forEach(h=>{const l=last(h.id),dn=l===T,gap=l?dd(l,T):99,e=h.every_days||1;(dn||gap>=e?x.due:x.soon).push({h,dn,w:e-gap})});x.soon.sort((a,b)=>a.w-b.w)}
+  else x.key=()=>'';
+  document.getElementById('nav').innerHTML=TABS.map(([k,n])=>`<button class="${k==tab?'on':''}" data-a="tab" data-id="${k}"><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><span>${n}</span></button>`).join('')+`<i id="sd" class="${SYNC.s}"></i>`;
+  document.getElementById('app').innerHTML=LAY[tab].map(k=>W[k](x)).join('');
 }
 const A={
+  retry(){load()},
+  tab(id){tab=id;render();scrollTo(0,0)},
   tick(id){const a=D.st.log[id]||[],i=a.indexOf(T);i<0?a.push(T):a.splice(i,1);D.st.log[id]=a;tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred('light');save()},
   claim(k){D.st.claimed.push(k);tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success');save()},
   bonus(id){const a=D.st.done,i=a.indexOf(id);i<0?a.push(id):a.splice(i,1);save()},
   up(){D.level_now++;save()},
   addB(){const v=document.getElementById('bn').value.trim();if(!v)return;(D.bonus=D.bonus||[]).push({id:'b'+Date.now(),name:v,xp:20});save()},
   addR(){const t=document.getElementById('rt').value.trim(),a=+document.getElementById('ra').value,c=calc();if(!t||!c||!(a>=0))return;(c.L.rewards=c.L.rewards||[]).push({at:Math.min(100,a),text:t});save()},
-  imp(){try{const j=JSON.parse(document.getElementById('js').value.replace(/^```json|```$/g,'').trim());if(!Array.isArray(j.levels))throw 0;D=Object.assign(empty(),j,{st:D.st});save()}catch(e){alert('Не удалось прочитать JSON')}},
+  imp(){try{const j=JSON.parse(document.getElementById('js').value.replace(/^```json|```$/g,'').trim());if(!Array.isArray(j.levels))throw 0;D=Object.assign(empty(),j,{st:D.st});tab='home';save()}catch(e){alert('Не удалось прочитать JSON')}},
   exp(){document.getElementById('js').value=JSON.stringify(D,null,1)}
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset.id)});

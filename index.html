@@ -79,6 +79,16 @@ input{transition:border-color .2s,box-shadow .2s}input:focus{border-color:#6aa5f
 @keyframes dot{50%{opacity:.35}}
 @keyframes fl{to{transform:translateY(-48px);opacity:0}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.stage{position:relative;height:150px;display:grid;place-items:end center;margin:6px 0 12px;padding-bottom:6px}
+.pet{position:relative;font-size:var(--sz);line-height:1;display:inline-block;animation:hop 1.8s ease-in-out infinite;transform-origin:50% 100%}
+.pet.sad{animation:sway 3.5s ease-in-out infinite;filter:grayscale(.6)}
+.pet .crown{position:absolute;top:-.55em;left:50%;transform:translateX(-50%);font-size:.45em;font-weight:400}
+.pet .spk{position:absolute;right:-.3em;top:-.1em;font-size:.4em;font-weight:400;animation:dot 1.4s infinite}
+.say{position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:12px;padding:4px 10px;border-radius:14px;background:var(--in);border:1px solid var(--line);white-space:nowrap}
+.mb{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin:4px 0 10px}.mb i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#ff9a5a,#ff6f91,#6aa5ff);transition:width .8s}
+.p3{grid-template-columns:repeat(3,1fr)}.p3 .b{padding:10px 4px}
+@keyframes hop{0%,100%{transform:translateY(0) scaleY(1)}45%{transform:translateY(-12px) scaleY(1.04)}60%{transform:translateY(0) scaleY(.94)}}
+@keyframes sway{50%{transform:rotate(-6deg)}}
 @media(min-width:720px){nav{width:196px}nav button span{display:inline}main{margin-left:220px;max-width:1100px}}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a5a"/><stop offset=".55" stop-color="#ff6f91"/><stop offset="1" stop-color="#6aa5ff"/></linearGradient></defs></svg>
@@ -91,9 +101,9 @@ const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const T=iso(new Date()),dd=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const empty=()=>({profile:{name:'',avatar:'🙂'},dream:'',level_now:1,levels:[],bonus:[],st:{log:{},claimed:[],done:[]}});
-const IC={goals:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',tasks:'M4 12l5 5L20 6',quests:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.3l6.1-.7z',gift:'M4 9h16v4H4zM6 13v8h12v-8M12 9v12M12 9c-3 0-4-4-1.5-4S12 9 12 9zM12 9c3 0 4-4 1.5-4S12 9 12 9z',set:'M4 7h9M17 7h3M4 17h3M11 17h9M15 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM9 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'};
-const TABS=[['home','Главная'],['tasks','Задачи'],['goals','Цели'],['quests','Квесты'],['gift','Награды'],['set','Настройки']];
-const LAY={home:['warn','hero','next','gauge','today','metrics','streak','quests'],tasks:['today','soon','metrics','streak'],goals:['gLvl','gHab','gMet','gRew','gBon'],quests:['quests'],gift:['next','rewards'],set:['settings']};
+const IC={pet:'M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.4-7 10-7 10z',goals:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',tasks:'M4 12l5 5L20 6',quests:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.3l6.1-.7z',gift:'M4 9h16v4H4zM6 13v8h12v-8M12 9v12M12 9c-3 0-4-4-1.5-4S12 9 12 9zM12 9c3 0 4-4 1.5-4S12 9 12 9z',set:'M4 7h9M17 7h3M4 17h3M11 17h9M15 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM9 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'};
+const TABS=[['home','Главная'],['tasks','Задачи'],['goals','Цели'],['quests','Квесты'],['pet','Питомец'],['gift','Награды'],['set','Настройки']];
+const LAY={home:['warn','hero','next','petMini','gauge','today','metrics','streak','quests'],tasks:['today','soon','metrics','streak'],goals:['gLvl','gHab','gMet','gRew','gBon'],quests:['quests'],pet:['petBig'],gift:['next','rewards'],set:['settings']};
 let D=null,tm,tab='home',ready=!API,SYNC={s:API?'wait':'off',m:''};
 const HINT={no_init:'Приложение открыто не через Telegram. Запускай через бота.',no_token:'В свойствах скрипта нет BOT_TOKEN.',bad_hash:'Подпись не сошлась: BOT_TOKEN не от того бота, через которого открыто приложение.',expired:'Сессия устарела, перезапусти приложение.',too_big:'Данные слишком большие для ячейки.','Failed to fetch':'Нет доступа к скрипту: в развёртывании нужен доступ «Все», а URL в API должен оканчиваться на /exec.'};
 const hint=m=>HINT[m]||m;
@@ -124,12 +134,30 @@ function calc(){
 }
 const ring=(v,t)=>`<div class="ring"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="36" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="45" cy="45" r="36" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" style="stroke-dasharray:0 226" data-p="strokeDasharray" data-to="${Math.min(1,v)*226} 226" transform="rotate(-90 45 45)"/><text x="45" y="52" text-anchor="middle">${Math.round(v*100)}</text></svg>${t}</div>`;
 const trow=({h,dn})=>`<div class="row"><button class="ck ${dn?'on':''} ${dn&&fx==h.id?'pop':''}" data-a="tick" data-id="${esc(h.id)}">${dn?'✓':''}</button><span class="${dn?'done':''}">${esc(h.name)}</span><i class="xp">+${h.xp||0} XP</i></div>`;
+const TH=[0,5,20,50,100],stg=g=>TH.filter(t=>g>=t).length-1,SN=['Яйцо','Малыш','Подросток','Взрослый','Легенда'];
+const SP=[['🐱','Кот'],['🐶','Пёс'],['🦊','Лис'],['🐰','Кролик'],['🐲','Дракон']];
+const pcur=p=>{const h=(Date.now()-p.t)/36e5;return{s:Math.max(0,p.s-h*4),j:Math.max(0,p.j-h*3)}};
+const pface=p=>{const s=stg(p.gp);return s==0?'🥚':s==1?'🐣':p.type};
+const xpTotal=()=>{let xp=0;D.levels.flatMap(l=>l.habits||[]).forEach(h=>xp+=(D.st.log[h.id]||[]).length*(h.xp||0));(D.bonus||[]).forEach(b=>{if(D.st.done.includes(b.id))xp+=b.xp||0});return xp};
+function petAdd(s,j,gp,cost){const p=D.pet,c=pcur(p),s0=stg(p.gp);p.s=Math.min(100,c.s+s);p.j=Math.min(100,c.j+j);p.t=Date.now();p.gp+=gp;p.spent+=cost;return stg(p.gp)>s0}
 const inp=(f,i,k,v,t)=>`<input data-f="${f}" data-i="${i}" data-k="${k}" type="${t}" ${t=='number'?'inputmode="decimal" step="any"':''} value="${esc(v)}">`;
 const lab=(t,h)=>`<label class="fl">${t}${h}</label>`;
 const rk=(L,r)=>L.n+':'+r.at+':'+r.text;
 let eN=null;const EL=()=>{const n=eN||D.level_now+1;return D.levels.find(l=>l.n==n)};
 const dl=(f,i)=>`<button class="b dl" data-a="del" data-id="${f}:${i}">Удалить</button>`;
 const W={
+petMini:x=>{const p=D.pet;if(!p)return`<div class="w" data-a="tab" data-id="pet"><div class="lb">Питомец</div><div class="ttl">Возьми яйцо 🥚</div></div>`;const c=pcur(p),m=(c.s+c.j)/2;
+  return`<div class="w" data-a="tab" data-id="pet"><div class="r2"><div><div class="lb">${esc(p.name)}</div><div class="m">${c.s<25?'Хочет есть':c.j<25?'Скучает':'Всё хорошо'}</div></div><div class="pet ${m<35?'sad':''}" style="--sz:44px">${pface(p)}</div><span class="pill">🪙 ${Math.max(0,x.xp-p.spent)}</span></div></div>`},
+petBig:x=>{const p=D.pet;
+  if(!p)return`<div class="w"><div class="lb">Питомец</div><div class="ttl">Возьми яйцо</div><p class="m">Питомец растёт, пока ты выполняешь задачи и заботишься о нём. Выбери, кто вылупится:</p><input id="pn" placeholder="Имя питомца"><div class="chips" style="margin-top:10px">${SP.map(q=>`<button class="chip" data-a="adopt" data-id="${q[0]}" title="${q[1]}" style="font-size:22px">${q[0]}</button>`).join('')}</div></div>`;
+  const c=pcur(p),g=p.gp,s=stg(g),nx=TH[s+1],mood=(c.s+c.j)/2,bal=Math.max(0,x.xp-p.spent);
+  const say=c.s<25?'🍖 Хочу есть':c.j<25?'🎾 Мне скучно':mood>70?'💛 Всё отлично':'🙂 Нормально';
+  return`<div class="w"><div class="r2"><div class="lb">${esc(p.name)} · ${SN[s]}</div><span class="pill">🪙 ${bal}</span></div>
+  <div class="stage"><div class="say">${say}</div><div class="pet ${mood<35?'sad':''}" style="--sz:${[64,72,84,96,108][s]}px">${s>=4?'<b class="crown">👑</b>':''}${pface(p)}${s==3?'<b class="spk">✨</b>':''}</div></div>
+  <div class="m">${nx?'Рост: '+g+' / '+nx:'Максимальная стадия'}</div><div class="mb"><i style="width:${nx?Math.min(100,(g-TH[s])/(nx-TH[s])*100):100}%"></i></div>
+  <div class="m">Сытость</div><div class="mb"><i style="width:${c.s}%"></i></div><div class="m">Настроение</div><div class="mb"><i style="width:${c.j}%"></i></div>
+  <div class="fld p3"><button class="b" data-a="pet" data-id="feed">🍖 5</button><button class="b" data-a="pet" data-id="play">🎾 3</button><button class="b" data-a="pet" data-id="treat">🍰 15</button></div>
+  <div class="m" style="margin-top:10px">Монеты = заработанный XP минус траты. Каждая выполненная задача радует питомца.${s==0?' Вылупится: '+p.type:''}</div></div>`},
 gLvl:()=>{const L=EL();return`<div class="w"><div class="lb">Уровни</div><div class="chips">${D.levels.map(l=>`<button class="chip ${L&&l.n==L.n?'on':''}" data-a="lv" data-id="${l.n}">${l.n}</button>`).join('')}<button class="chip" data-a="add" data-id="lvl">+</button></div>${lab('Мой текущий уровень',inp('now',0,'n',D.level_now,'number'))}${L?lab('Название уровня '+L.n,inp('lvl',0,'title',L.title||'','text'))+lab('Доля результата в прогрессе, %',inp('lvl',0,'rw',Math.round(((L.weights&&L.weights.result)??.6)*100),'number')):'<div class="m" style="margin-top:10px">Уровней нет, нажми +</div>'}</div>`},
 gHab:()=>{const L=EL();if(!L)return'';return`<div class="w"><div class="lb">Задачи уровня ${L.n}</div>${(L.habits||[]).map((h,i)=>`<div class="it">${inp('habits',i,'name',h.name,'text')}<div class="fld">${lab('Раз в N дней',inp('habits',i,'every_days',h.every_days||1,'number'))}${lab('XP',inp('habits',i,'xp',h.xp||0,'number'))}${dl('habits',i)}</div></div>`).join('')}<div class="mini"><button class="b" data-a="add" data-id="habits">+ Задача</button></div></div>`},
 gMet:()=>{const L=EL();if(!L)return'';return`<div class="w"><div class="lb">Метрики уровня ${L.n}</div>${(L.metrics||[]).map((m,i)=>`<div class="it">${inp('metrics',i,'name',m.name,'text')}<div class="fld">${lab('Старт',inp('metrics',i,'start',m.start,'number'))}${lab('Сейчас',inp('metrics',i,'current',m.current,'number'))}${lab('Цель',inp('metrics',i,'target',m.target,'number'))}${lab('Вес',inp('metrics',i,'w',m.w||1,'number'))}</div><div class="mini">${dl('metrics',i)}</div></div>`).join('')}<div class="mini"><button class="b" data-a="add" data-id="metrics">+ Метрика</button></div></div>`},
@@ -185,6 +213,9 @@ const ask=(t,f)=>tg&&tg.showConfirm?tg.showConfirm(t,ok=>ok&&f()):confirm(t)&&f(
 function setAv(file){const r=new FileReader();r.onload=()=>{const im=new Image();im.onerror=()=>alert('Не удалось прочитать картинку');im.onload=()=>{const c=document.createElement('canvas'),S=128,m=Math.min(im.width,im.height),x=c.getContext('2d');c.width=c.height=S;x.fillStyle='#fff';x.fillRect(0,0,S,S);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,S,S);D.avatarImg=c.toDataURL('image/jpeg',.8);save()};im.src=r.result};r.readAsDataURL(file)}
 const A={
   retry(){load()},
+  adopt(id){D.pet={type:id,name:(document.getElementById('pn').value.trim()||'Питомец').slice(0,20),spent:0,gp:0,s:80,j:80,t:Date.now()};boom(60,innerWidth/2,innerHeight/3);save()},
+  pet(id){const C={feed:[35,0,1,5],play:[0,35,1,3],treat:[15,25,3,15]}[id];if(xpTotal()-D.pet.spent<C[3]){floatTxt('Мало монет');return}
+    const up=petAdd(...C);floatTxt(id=='feed'?'🍖':id=='play'?'🎾':'🍰');if(up){boom(110,innerWidth/2,innerHeight/3);floatTxt('Новая стадия!')}else boom(14,XY[0],XY[1]);save()},
   lv(id){eN=+id;render()},
   add(id){const L=EL();
     if(id=='lvl'){const n=Math.max(D.level_now,...D.levels.map(l=>l.n))+1;D.levels.push({n,title:'Новый уровень'});D.levels.sort((a,b)=>a.n-b.n);eN=n}
@@ -193,16 +224,16 @@ const A={
     save()},
   del(id){const[f,i]=id.split(':');ask('Удалить?',()=>{(f=='bonus'?D.bonus:EL()[f]).splice(+i,1);save()})},
   avDel(){delete D.avatarImg;save()},
-  delProg(){ask('Сбросить весь прогресс? План останется.',()=>{D.st={log:{},claimed:[],done:[]};save()})},
-  delPlan(){ask('Удалить план и весь прогресс?',()=>{const a=D.avatarImg;D=empty();if(a)D.avatarImg=a;tab='set';save()})},
+  delProg(){ask('Сбросить весь прогресс? План останется.',()=>{D.st={log:{},claimed:[],done:[]};if(D.pet)D.pet.spent=0;save()})},
+  delPlan(){ask('Удалить план и весь прогресс?',()=>{const a=D.avatarImg,pp=D.pet;D=empty();if(a)D.avatarImg=a;if(pp){pp.spent=0;D.pet=pp}tab='set';save()})},
   tab(id){tab=id;animate=true;render();scrollTo(0,0)},
-  tick(id){const a=D.st.log[id]||[],i=a.indexOf(T);i<0?a.push(T):a.splice(i,1);D.st.log[id]=a;if(i<0){const hh=D.levels.flatMap(l=>l.habits||[]).find(h=>h.id==id);floatTxt('+'+((hh&&hh.xp)||0)+' XP');boom(18,XY[0],XY[1]);fx=id}tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred('light');save()},
+  tick(id){const a=D.st.log[id]||[],i=a.indexOf(T);i<0?a.push(T):a.splice(i,1);D.st.log[id]=a;if(i<0){const hh=D.levels.flatMap(l=>l.habits||[]).find(h=>h.id==id);floatTxt('+'+((hh&&hh.xp)||0)+' XP');boom(18,XY[0],XY[1]);fx=id;if(D.pet)petAdd(0,6,0,0)}tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred('light');save()},
   claim(k){D.st.claimed.push(k);boom(90,innerWidth/2,innerHeight/3);tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success');save()},
   bonus(id){const a=D.st.done,i=a.indexOf(id);if(i<0){floatTxt('+XP');boom(16,XY[0],XY[1])}i<0?a.push(id):a.splice(i,1);save()},
   up(){D.level_now++;eN=null;animate=true;boom(110,innerWidth/2,innerHeight/3);save()},
   addB(){const v=document.getElementById('bn').value.trim();if(!v)return;(D.bonus=D.bonus||[]).push({id:'b'+Date.now(),name:v,xp:20});save()},
   addR(){const t=document.getElementById('rt').value.trim(),a=+document.getElementById('ra').value,c=calc();if(!t||!c||!(a>=0))return;(c.L.rewards=c.L.rewards||[]).push({at:Math.min(100,a),text:t});save()},
-  imp(){try{const j=JSON.parse(document.getElementById('js').value.replace(/^```json|```$/g,'').trim());if(!Array.isArray(j.levels))throw 0;D=Object.assign(empty(),j,{st:D.st});tab='home';save()}catch(e){alert('Не удалось прочитать JSON')}},
+  imp(){try{const j=JSON.parse(document.getElementById('js').value.replace(/^```json|```$/g,'').trim());if(!Array.isArray(j.levels))throw 0;D=Object.assign(empty(),j,{st:D.st,avatarImg:D.avatarImg,pet:D.pet});tab='home';save()}catch(e){alert('Не удалось прочитать JSON')}},
   exp(){document.getElementById('js').value=JSON.stringify(D,null,1)}
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset.id)});

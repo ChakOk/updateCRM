@@ -89,6 +89,10 @@ input{transition:border-color .2s,box-shadow .2s}input:focus{border-color:#6aa5f
 .p3{grid-template-columns:repeat(3,1fr)}.p3 .b{padding:10px 4px}
 @keyframes hop{0%,100%{transform:translateY(0) scaleY(1)}45%{transform:translateY(-12px) scaleY(1.04)}60%{transform:translateY(0) scaleY(.94)}}
 @keyframes sway{50%{transform:rotate(-6deg)}}
+.ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin-top:10px}
+.at{padding:12px 10px;border-radius:16px;background:var(--in);border:1px solid var(--line);font-size:12px;line-height:1.3}.at b{display:block;font-size:24px;font-weight:400;margin-bottom:4px}.at.lock{opacity:.45}
+.toast{position:fixed;top:max(14px,env(safe-area-inset-top));left:50%;z-index:40;padding:10px 16px;border-radius:16px;background:var(--tx);color:var(--bg);font-size:14px;white-space:nowrap;animation:tin 3.2s ease both;pointer-events:none}
+@keyframes tin{0%{opacity:0;transform:translate(-50%,-24px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
 @media(min-width:720px){nav{width:196px}nav button span{display:inline}main{margin-left:220px;max-width:1100px}}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a5a"/><stop offset=".55" stop-color="#ff6f91"/><stop offset="1" stop-color="#6aa5ff"/></linearGradient></defs></svg>
@@ -103,7 +107,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const empty=()=>({profile:{name:'',avatar:'🙂'},dream:'',level_now:1,levels:[],bonus:[],st:{log:{},claimed:[],done:[]}});
 const IC={pet:'M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.4-7 10-7 10z',goals:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',tasks:'M4 12l5 5L20 6',quests:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.3l6.1-.7z',gift:'M4 9h16v4H4zM6 13v8h12v-8M12 9v12M12 9c-3 0-4-4-1.5-4S12 9 12 9zM12 9c3 0 4-4 1.5-4S12 9 12 9z',set:'M4 7h9M17 7h3M4 17h3M11 17h9M15 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM9 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'};
 const TABS=[['home','Главная'],['tasks','Задачи'],['goals','Цели'],['quests','Квесты'],['pet','Питомец'],['gift','Награды'],['set','Настройки']];
-const LAY={home:['warn','hero','next','petMini','gauge','today','metrics','streak','quests'],tasks:['today','soon','metrics','streak'],goals:['gLvl','gHab','gMet','gRew','gBon'],quests:['quests'],pet:['petBig'],gift:['next','rewards'],set:['settings']};
+const LAY={home:['warn','hero','next','petMini','gauge','today','metrics','streak','quests'],tasks:['today','soon','metrics','streak'],goals:['gLvl','gHab','gMet','gRew','gBon'],quests:['quests'],pet:['petBig','ach'],gift:['next','rewards'],set:['settings']};
 let D=null,tm,tab='home',ready=!API,SYNC={s:API?'wait':'off',m:''};
 const HINT={no_init:'Приложение открыто не через Telegram. Запускай через бота.',no_token:'В свойствах скрипта нет BOT_TOKEN.',bad_hash:'Подпись не сошлась: BOT_TOKEN не от того бота, через которого открыто приложение.',expired:'Сессия устарела, перезапусти приложение.',too_big:'Данные слишком большие для ячейки.','Failed to fetch':'Нет доступа к скрипту: в развёртывании нужен доступ «Все», а URL в API должен оканчиваться на /exec.'};
 const hint=m=>HINT[m]||m;
@@ -139,13 +143,20 @@ const SP=[['🐱','Кот'],['🐶','Пёс'],['🦊','Лис'],['🐰','Кро�
 const pcur=p=>{const h=(Date.now()-p.t)/36e5;return{s:Math.max(0,p.s-h*4),j:Math.max(0,p.j-h*3)}};
 const pface=p=>{const s=stg(p.gp);return s==0?'🥚':s==1?'🐣':p.type};
 const xpTotal=()=>{let xp=0;D.levels.flatMap(l=>l.habits||[]).forEach(h=>xp+=(D.st.log[h.id]||[]).length*(h.xp||0));(D.bonus||[]).forEach(b=>{if(D.st.done.includes(b.id))xp+=b.xp||0});return xp};
-function petAdd(s,j,gp,cost){const p=D.pet,c=pcur(p),s0=stg(p.gp);p.s=Math.min(100,c.s+s);p.j=Math.min(100,c.j+j);p.t=Date.now();p.gp+=gp;p.spent+=cost;return stg(p.gp)>s0}
+function petAdd(s,j,gp,cost){const p=D.pet,c=pcur(p),s0=stg(p.gp);p.s=Math.min(100,c.s+s);p.j=Math.min(100,c.j+j);p.t=Date.now();p.gp+=gp;p.spent+=cost;p.tot=(p.tot||0)+cost;return stg(p.gp)>s0}
+const ACH=[['hatch','🐣','Первый вздох','Питомец вылупился из яйца',10],['gourmet','🍖','Гурман','Покормил питомца 10 раз',10],['playful','🎾','Заводила','Поиграл с питомцем 20 раз',15],['sweet','🍰','Сладкоежка','Дал 5 лакомств',10],['rescue','🆘','Спасатель','Накормил почти голодного питомца',15],['forgive','💌','Прощение','Вернулся к грустному питомцу',15],['owl','🦉','Ночная смена','Позаботился о питомце ночью',10],['perfect','💎','Идеальный баланс','Обе шкалы питомца почти полные',20],['patron','💰','Меценат','Потратил на питомца 100 монет',20],['together','🤝','Вместе до конца','30 задач выполнено вместе с питомцем',25],['legend','👑','Легенда','Питомец достиг высшей стадии',50]];
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3300)}
+function achCheck(x){const p=D.pet;if(!p)return;D.ach=D.ach||{};x=x||{};const n=p.n||{},c=pcur(p),h=new Date().getHours(),g=stg(p.gp);
+  const ok={hatch:g>=1,legend:g>=4,gourmet:(n.feed||0)>=10,playful:(n.play||0)>=20,sweet:(n.treat||0)>=5,rescue:!!x.rescue,owl:!!x.act&&h<5,perfect:!!x.act&&c.s>=95&&c.j>=95,patron:(p.tot||0)>=100,together:(n.tasks||0)>=30,forgive:!!x.forgive};let k=0;
+  ACH.forEach(a=>{if(ok[a[0]]&&!D.ach[a[0]]){D.ach[a[0]]=Date.now();p.spent-=a[4];setTimeout(()=>{toast('🏆 '+a[2]+' · +'+a[4]+' 🪙');boom(70,innerWidth/2,innerHeight/4)},k++*1600+500)}})}
+function taskPet(id){const p=D.pet;if(!p)return;const q=p.seen=(p.seen&&p.seen.d==T)?p.seen:{d:T,k:[]};if(q.k.includes(id))return;q.k.push(id);petAdd(0,6,0,0);p.n=p.n||{};p.n.tasks=(p.n.tasks||0)+1;achCheck()}
 const inp=(f,i,k,v,t)=>`<input data-f="${f}" data-i="${i}" data-k="${k}" type="${t}" ${t=='number'?'inputmode="decimal" step="any"':''} value="${esc(v)}">`;
 const lab=(t,h)=>`<label class="fl">${t}${h}</label>`;
 const rk=(L,r)=>L.n+':'+r.at+':'+r.text;
 let eN=null;const EL=()=>{const n=eN||D.level_now+1;return D.levels.find(l=>l.n==n)};
 const dl=(f,i)=>`<button class="b dl" data-a="del" data-id="${f}:${i}">Удалить</button>`;
 const W={
+ach:()=>{const AA=D.ach||{},n=Object.keys(AA).length;return`<div class="w"><div class="r2"><div class="lb">Скрытые ачивки</div><span class="pill">${n} / ${ACH.length}</span></div><div class="ach">${ACH.map(a=>AA[a[0]]?`<div class="at"><b>${a[1]}</b>${a[2]}<div class="m">${a[3]}</div></div>`:`<div class="at lock"><b>🔒</b>???<div class="m">Скрыто</div></div>`).join('')}</div><div class="m" style="margin-top:10px">Условия не показываются. За каждую ачивку награда в монетах.</div></div>`},
 petMini:x=>{const p=D.pet;if(!p)return`<div class="w" data-a="tab" data-id="pet"><div class="lb">Питомец</div><div class="ttl">Возьми яйцо 🥚</div></div>`;const c=pcur(p),m=(c.s+c.j)/2;
   return`<div class="w" data-a="tab" data-id="pet"><div class="r2"><div><div class="lb">${esc(p.name)}</div><div class="m">${c.s<25?'Хочет есть':c.j<25?'Скучает':'Всё хорошо'}</div></div><div class="pet ${m<35?'sad':''}" style="--sz:44px">${pface(p)}</div><span class="pill">🪙 ${Math.max(0,x.xp-p.spent)}</span></div></div>`},
 petBig:x=>{const p=D.pet;
@@ -215,7 +226,7 @@ const A={
   retry(){load()},
   adopt(id){D.pet={type:id,name:(document.getElementById('pn').value.trim()||'Питомец').slice(0,20),spent:0,gp:0,s:80,j:80,t:Date.now()};boom(60,innerWidth/2,innerHeight/3);save()},
   pet(id){const C={feed:[35,0,1,5],play:[0,35,1,3],treat:[15,25,3,15]}[id];if(xpTotal()-D.pet.spent<C[3]){floatTxt('Мало монет');return}
-    const up=petAdd(...C);floatTxt(id=='feed'?'🍖':id=='play'?'🎾':'🍰');if(up){boom(110,innerWidth/2,innerHeight/3);floatTxt('Новая стадия!')}else boom(14,XY[0],XY[1]);save()},
+    const c0=pcur(D.pet),m0=(c0.s+c0.j)/2,up=petAdd(...C),p=D.pet;p.n=p.n||{};p.n[id]=(p.n[id]||0)+1;achCheck({act:1,rescue:id=='feed'&&c0.s<10,forgive:m0<15});floatTxt(id=='feed'?'🍖':id=='play'?'🎾':'🍰');if(up){boom(110,innerWidth/2,innerHeight/3);floatTxt('Новая стадия!')}else boom(14,XY[0],XY[1]);save()},
   lv(id){eN=+id;render()},
   add(id){const L=EL();
     if(id=='lvl'){const n=Math.max(D.level_now,...D.levels.map(l=>l.n))+1;D.levels.push({n,title:'Новый уровень'});D.levels.sort((a,b)=>a.n-b.n);eN=n}
@@ -225,15 +236,15 @@ const A={
   del(id){const[f,i]=id.split(':');ask('Удалить?',()=>{(f=='bonus'?D.bonus:EL()[f]).splice(+i,1);save()})},
   avDel(){delete D.avatarImg;save()},
   delProg(){ask('Сбросить весь прогресс? План останется.',()=>{D.st={log:{},claimed:[],done:[]};if(D.pet)D.pet.spent=0;save()})},
-  delPlan(){ask('Удалить план и весь прогресс?',()=>{const a=D.avatarImg,pp=D.pet;D=empty();if(a)D.avatarImg=a;if(pp){pp.spent=0;D.pet=pp}tab='set';save()})},
+  delPlan(){ask('Удалить план и весь прогресс?',()=>{const a=D.avatarImg,pp=D.pet,ac=D.ach;D=empty();if(a)D.avatarImg=a;if(ac)D.ach=ac;if(pp){pp.spent=0;D.pet=pp}tab='set';save()})},
   tab(id){tab=id;animate=true;render();scrollTo(0,0)},
-  tick(id){const a=D.st.log[id]||[],i=a.indexOf(T);i<0?a.push(T):a.splice(i,1);D.st.log[id]=a;if(i<0){const hh=D.levels.flatMap(l=>l.habits||[]).find(h=>h.id==id);floatTxt('+'+((hh&&hh.xp)||0)+' XP');boom(18,XY[0],XY[1]);fx=id;if(D.pet)petAdd(0,6,0,0)}tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred('light');save()},
+  tick(id){const a=D.st.log[id]||[],i=a.indexOf(T);i<0?a.push(T):a.splice(i,1);D.st.log[id]=a;if(i<0){const hh=D.levels.flatMap(l=>l.habits||[]).find(h=>h.id==id);floatTxt('+'+((hh&&hh.xp)||0)+' XP');boom(18,XY[0],XY[1]);fx=id;taskPet(id)}tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred('light');save()},
   claim(k){D.st.claimed.push(k);boom(90,innerWidth/2,innerHeight/3);tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success');save()},
   bonus(id){const a=D.st.done,i=a.indexOf(id);if(i<0){floatTxt('+XP');boom(16,XY[0],XY[1])}i<0?a.push(id):a.splice(i,1);save()},
   up(){D.level_now++;eN=null;animate=true;boom(110,innerWidth/2,innerHeight/3);save()},
   addB(){const v=document.getElementById('bn').value.trim();if(!v)return;(D.bonus=D.bonus||[]).push({id:'b'+Date.now(),name:v,xp:20});save()},
   addR(){const t=document.getElementById('rt').value.trim(),a=+document.getElementById('ra').value,c=calc();if(!t||!c||!(a>=0))return;(c.L.rewards=c.L.rewards||[]).push({at:Math.min(100,a),text:t});save()},
-  imp(){try{const j=JSON.parse(document.getElementById('js').value.replace(/^```json|```$/g,'').trim());if(!Array.isArray(j.levels))throw 0;D=Object.assign(empty(),j,{st:D.st,avatarImg:D.avatarImg,pet:D.pet});tab='home';save()}catch(e){alert('Не удалось прочитать JSON')}},
+  imp(){try{const j=JSON.parse(document.getElementById('js').value.replace(/^```json|```$/g,'').trim());if(!Array.isArray(j.levels))throw 0;D=Object.assign(empty(),j,{st:D.st,avatarImg:D.avatarImg,pet:D.pet,ach:D.ach});tab='home';save()}catch(e){alert('Не удалось прочитать JSON')}},
   exp(){document.getElementById('js').value=JSON.stringify(D,null,1)}
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset.id)});
